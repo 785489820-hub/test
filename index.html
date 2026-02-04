@@ -409,17 +409,14 @@
             padding-top: 44px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
+            justify-content: flex-start;
+            padding-left: 16px;
+            padding-right: 16px;
+            gap: 8px;
             border-bottom: 1px solid var(--divider_light);
         }
 
         .file-manager-header .back-btn {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-top: 22px;
             width: 32px;
             height: 32px;
             display: flex;
@@ -427,6 +424,7 @@
             justify-content: center;
             cursor: pointer;
             color: var(--text_primary);
+            flex-shrink: 0;
         }
 
         .file-manager-header .title {
@@ -1559,20 +1557,24 @@
                 flex-shrink: 0;
             }
 
-            /* 图片网格 - 一屏正好显示3张图（1行），可滚动查看更多 */
+            /* 图片网格 - 宽度适配屏幕，一行3张图 */
             .photo-grid {
                 flex: 1;
+                width: 100%;
                 height: auto !important;
                 min-height: 0;
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
                 align-content: start;
+                padding: 1px;
+                gap: 1px;
             }
 
-            /* 图片变小，一行3个正方形 */
+            /* 图片宽度 = (屏幕宽度 - 间距) / 3 */
             .photo-item {
                 aspect-ratio: 1;
+                width: 100%;
             }
 
             /* 底部分享面板 */
@@ -1596,14 +1598,7 @@
                 padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
                 padding-bottom: 10px;
                 flex-shrink: 0;
-            }
-
-            .file-manager-header .back-btn {
-                margin-top: 0;
-                top: auto;
-                transform: none;
-                position: relative;
-                left: 0;
+                justify-content: flex-start;
             }
 
             .file-manager-content {
