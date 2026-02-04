@@ -266,6 +266,27 @@
             height: calc(100% - 96px - 80px); /* 减去顶部导航和底部按钮区域 */
             background: #E5E5EA;
             align-content: start;
+            /* 显示滚动条 */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+        }
+
+        /* Webkit 浏览器滚动条样式 */
+        .photo-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .photo-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .photo-grid::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        .photo-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .photo-item {
@@ -1563,12 +1584,29 @@
                 width: 100%;
                 height: auto !important;
                 min-height: 0;
-                overflow-y: auto;
+                overflow-y: scroll;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
                 align-content: start;
                 padding: 1px;
                 gap: 1px;
+                /* 移动端显示滚动条 */
+                scrollbar-width: thin;
+                scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+            }
+
+            /* 移动端滚动条样式 */
+            .photo-grid::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .photo-grid::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .photo-grid::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.4);
+                border-radius: 2px;
             }
 
             /* 图片宽度 = (屏幕宽度 - 间距) / 3 */
