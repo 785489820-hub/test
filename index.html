@@ -1939,14 +1939,32 @@
         };
 
         // 模拟图片数据
-        // 风景照图片 - 使用 Unsplash 的高质量风景图（6张，一行2个x3行，一屏完整显示）
+        // 风景照图片 - 使用 Unsplash 的高质量风景图（18张，6行x3列，支持滚动）
         const photos = [
+            // 第1行
             { id: 1, url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop' }, // 山脉日出
             { id: 2, url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop' }, // 森林山谷
             { id: 3, url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop' }, // 海滩日落
+            // 第2行
             { id: 4, url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&h=400&fit=crop' }, // 湖泊倒影
             { id: 5, url: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop' }, // 海浪沙滩
             { id: 6, url: 'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=400&h=400&fit=crop' }, // 秋季森林
+            // 第3行
+            { id: 7, url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=400&fit=crop' }, // 雾中山峦
+            { id: 8, url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop' }, // 阳光森林
+            { id: 9, url: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&h=400&fit=crop' }, // 草原日落
+            // 第4行
+            { id: 10, url: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=400&fit=crop' }, // 瀑布
+            { id: 11, url: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=400&fit=crop' }, // 湖泊山景
+            { id: 12, url: 'https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?w=400&h=400&fit=crop' }, // 雪山
+            // 第5行
+            { id: 13, url: 'https://images.unsplash.com/photo-1482784160316-6eb046863ece?w=400&h=400&fit=crop' }, // 海岸线
+            { id: 14, url: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop' }, // 森林小路
+            { id: 15, url: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400&h=400&fit=crop' }, // 绿色森林
+            // 第6行
+            { id: 16, url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&h=400&fit=crop' }, // 松树林
+            { id: 17, url: 'https://images.unsplash.com/photo-1414609245224-afa02bfb3fda?w=400&h=400&fit=crop' }, // 金色麦田
+            { id: 18, url: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&h=400&fit=crop' }, // 山间云海
         ];
 
         // 推荐名称池
