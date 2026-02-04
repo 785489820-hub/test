@@ -1261,15 +1261,23 @@
 
         /* 移动端适配 - 真实手机上隐藏模拟器外壳，全屏显示内容 */
         @media (max-width: 480px) {
-            body {
+            html, body {
+                margin: 0;
                 padding: 0;
-                background: var(--bg_middle_standard);
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                height: 100dvh; /* 动态视口高度，解决移动端地址栏问题 */
+                background: #F2F2F7;
             }
 
             .demo-container {
                 gap: 0;
                 width: 100%;
-                height: 100vh;
+                height: 100%;
+                height: 100dvh;
+                overflow: hidden;
             }
 
             /* 隐藏标题 */
@@ -1281,15 +1289,19 @@
             .phone-frame {
                 width: 100%;
                 height: 100%;
+                height: 100dvh;
                 background: transparent;
                 border-radius: 0;
                 padding: 0;
                 box-shadow: none;
+                overflow: hidden;
             }
 
             .phone-screen {
                 border-radius: 0;
-                height: 100vh;
+                height: 100%;
+                height: 100dvh;
+                overflow: hidden;
             }
 
             /* 隐藏刘海（真实手机有自己的刘海） */
@@ -1302,30 +1314,97 @@
                 display: none;
             }
 
+            /* 页面容器 */
+            .page-container {
+                height: 100%;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
             /* 调整页面内容区域 */
             .page {
-                padding-top: env(safe-area-inset-top, 0);
-                padding-bottom: env(safe-area-inset-bottom, 0);
+                height: 100%;
+                height: 100dvh;
+                overflow: hidden;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+
+            /* 相册页面 */
+            .album-page {
+                display: flex;
+                flex-direction: column;
+                height: 100dvh;
             }
 
             /* 调整相册页面的顶栏位置 */
             .album-header {
-                padding-top: calc(env(safe-area-inset-top, 0) + 10px);
+                height: auto;
+                min-height: 44px;
+                padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
+                padding-bottom: 10px;
+                flex-shrink: 0;
             }
 
-            /* 调整所有页面的导航栏 */
-            .share-header,
-            .keyboard-page-header,
-            .share-sending-header,
-            .share-failed-header {
-                padding-top: calc(env(safe-area-inset-top, 0) + 10px);
+            /* 图片网格 - 填满中间区域 */
+            .photo-grid {
+                flex: 1;
+                height: auto !important;
+                min-height: 0;
+                overflow: hidden;
             }
 
-            /* 确保底部按钮区域不被遮挡 */
-            .album-footer,
-            .bottom-area,
-            .keyboard-bottom {
-                padding-bottom: calc(env(safe-area-inset-bottom, 0) + 10px);
+            /* 底部分享面板 */
+            .share-panel {
+                position: relative;
+                flex-shrink: 0;
+                border-radius: 0;
+                padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 10px);
+            }
+
+            /* 文件管理页面 */
+            .file-manager-page {
+                display: flex;
+                flex-direction: column;
+                height: 100dvh;
+            }
+
+            .file-manager-header {
+                height: auto;
+                min-height: 44px;
+                padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
+                padding-bottom: 10px;
+                flex-shrink: 0;
+            }
+
+            .file-manager-header .back-btn {
+                margin-top: 0;
+                top: auto;
+                transform: none;
+                position: relative;
+                left: 0;
+            }
+
+            .file-manager-content {
+                flex: 1;
+                height: auto;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+            }
+
+            /* 分享弹窗 */
+            .share-card {
+                max-height: 85dvh;
+            }
+
+            .share-card .home-indicator {
+                margin-bottom: calc(env(safe-area-inset-bottom, 0px));
+            }
+
+            /* iOS键盘 */
+            .ios-keyboard {
+                padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
             }
         }
     </style>
