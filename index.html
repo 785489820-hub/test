@@ -255,7 +255,7 @@
         }
 
         /* 图片网格 */
-        /* 图片网格 - 一行3个，照片之间有间距 */
+        /* 图片网格 - 一行3个，一屏正好显示3张小图 */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -265,6 +265,7 @@
             overflow-x: hidden;
             height: calc(100% - 96px - 80px); /* 减去顶部导航和底部按钮区域 */
             background: #E5E5EA;
+            align-content: start;
         }
 
         .photo-item {
@@ -1558,7 +1559,7 @@
                 flex-shrink: 0;
             }
 
-            /* 图片网格 - 填满中间区域 */
+            /* 图片网格 - 一屏正好显示3张图（1行），可滚动查看更多 */
             .photo-grid {
                 flex: 1;
                 height: auto !important;
@@ -1566,6 +1567,12 @@
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
+                align-content: start;
+            }
+
+            /* 图片变小，一行3个正方形 */
+            .photo-item {
+                aspect-ratio: 1;
             }
 
             /* 底部分享面板 */
