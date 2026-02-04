@@ -273,37 +273,36 @@
             cursor: pointer;
             width: 100%;
             height: 100%;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
+        /* 选中时不改变照片颜色，只显示checkbox */
         .photo-item.selected::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 153, 255, 0.3);
+            display: none;
         }
 
         .photo-item .check-mark {
             position: absolute;
-            bottom: 6px;
-            right: 6px;
-            width: 22px;
-            height: 22px;
+            bottom: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border: 2px solid white;
-            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .photo-item.selected .check-mark {
             background: var(--button_bg_primary_default);
             border-color: var(--button_bg_primary_default);
+            transform: scale(1.1);
         }
 
         .photo-item .check-mark svg {
@@ -311,11 +310,37 @@
             height: 14px;
             fill: white;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.15s ease;
         }
 
         .photo-item.selected .check-mark svg {
             opacity: 1;
+        }
+
+        /* 选中序号显示 */
+        .photo-item .select-number {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--button_bg_primary_default);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .photo-item.selected .select-number {
+            display: flex;
+        }
+
+        .photo-item.selected .check-mark {
+            display: none;
         }
 
         /* 底部分享面板 - 简化版 */
@@ -1740,6 +1765,15 @@
         }
 
         // ==================== 相册页面功能 ====================
+        // 滑动选择状态
+        const dragSelectState = {
+            isDragging: false,
+            startIndex: -1,
+            lastIndex: -1,
+            selectMode: null, // 'select' 或 'deselect'
+            selectedDuringDrag: new Set(),
+        };
+
         function initAlbumPage() {
             const grid = document.getElementById('photoGrid');
             grid.innerHTML = '';
@@ -1748,34 +1782,155 @@
                 const item = document.createElement('div');
                 item.className = `photo-item ${pageState.selectedPhotos.has(index) ? 'selected' : ''}`;
                 item.style.backgroundImage = `url(${photo.url})`;
+                item.dataset.index = index;
                 item.innerHTML = `
                     <div class="check-mark">
                         <svg viewBox="0 0 24 24">
                             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
                     </div>
+                    <div class="select-number"></div>
                 `;
-                
-                item.addEventListener('click', () => {
-                    if (pageState.selectedPhotos.has(index)) {
-                        pageState.selectedPhotos.delete(index);
-                        item.classList.remove('selected');
-                    } else {
-                        pageState.selectedPhotos.add(index);
-                        item.classList.add('selected');
-                    }
-                    updateAlbumTitle();
-                    log('PHOTO_SELECT', { 
-                        photoIndex: index, 
-                        selected: pageState.selectedPhotos.has(index),
-                        totalSelected: pageState.selectedPhotos.size
-                    });
-                });
                 
                 grid.appendChild(item);
             });
             
+            // 初始化滑动选择
+            initDragSelect(grid);
             updateAlbumTitle();
+            updateSelectNumbers();
+        }
+
+        // 更新选中序号显示
+        function updateSelectNumbers() {
+            const selectedArray = Array.from(pageState.selectedPhotos).sort((a, b) => a - b);
+            const items = document.querySelectorAll('.photo-item');
+            
+            items.forEach((item, index) => {
+                const numberEl = item.querySelector('.select-number');
+                if (pageState.selectedPhotos.has(index)) {
+                    const order = selectedArray.indexOf(index) + 1;
+                    numberEl.textContent = order;
+                }
+            });
+        }
+
+        // 初始化滑动选择功能
+        function initDragSelect(grid) {
+            // 获取触摸/鼠标位置对应的photo-item
+            function getItemAtPoint(x, y) {
+                const element = document.elementFromPoint(x, y);
+                if (!element) return null;
+                const item = element.closest('.photo-item');
+                return item;
+            }
+
+            // 切换选中状态
+            function toggleItem(item, forceState = null) {
+                if (!item) return;
+                const index = parseInt(item.dataset.index);
+                
+                let shouldSelect;
+                if (forceState !== null) {
+                    shouldSelect = forceState;
+                } else if (dragSelectState.selectMode !== null) {
+                    shouldSelect = dragSelectState.selectMode === 'select';
+                } else {
+                    shouldSelect = !pageState.selectedPhotos.has(index);
+                }
+
+                if (shouldSelect) {
+                    if (!pageState.selectedPhotos.has(index)) {
+                        pageState.selectedPhotos.add(index);
+                        item.classList.add('selected');
+                        dragSelectState.selectedDuringDrag.add(index);
+                    }
+                } else {
+                    if (pageState.selectedPhotos.has(index)) {
+                        pageState.selectedPhotos.delete(index);
+                        item.classList.remove('selected');
+                        dragSelectState.selectedDuringDrag.add(index);
+                    }
+                }
+                
+                updateAlbumTitle();
+                updateSelectNumbers();
+            }
+
+            // 开始拖动
+            function handleDragStart(e) {
+                e.preventDefault();
+                const point = e.touches ? e.touches[0] : e;
+                const item = getItemAtPoint(point.clientX, point.clientY);
+                
+                if (item) {
+                    const index = parseInt(item.dataset.index);
+                    dragSelectState.isDragging = true;
+                    dragSelectState.startIndex = index;
+                    dragSelectState.lastIndex = index;
+                    dragSelectState.selectedDuringDrag.clear();
+                    
+                    // 根据第一个点击的项目状态决定是选中还是取消选中模式
+                    dragSelectState.selectMode = pageState.selectedPhotos.has(index) ? 'deselect' : 'select';
+                    
+                    toggleItem(item);
+                }
+            }
+
+            // 拖动中
+            function handleDragMove(e) {
+                if (!dragSelectState.isDragging) return;
+                e.preventDefault();
+                
+                const point = e.touches ? e.touches[0] : e;
+                const item = getItemAtPoint(point.clientX, point.clientY);
+                
+                if (item) {
+                    const index = parseInt(item.dataset.index);
+                    
+                    // 只有当移动到新的项目时才处理
+                    if (index !== dragSelectState.lastIndex) {
+                        // 选中从上一个到当前的所有项目
+                        const start = Math.min(dragSelectState.lastIndex, index);
+                        const end = Math.max(dragSelectState.lastIndex, index);
+                        
+                        for (let i = start; i <= end; i++) {
+                            const targetItem = document.querySelector(`.photo-item[data-index="${i}"]`);
+                            if (targetItem && !dragSelectState.selectedDuringDrag.has(i)) {
+                                toggleItem(targetItem);
+                            }
+                        }
+                        
+                        dragSelectState.lastIndex = index;
+                    }
+                }
+            }
+
+            // 结束拖动
+            function handleDragEnd(e) {
+                if (dragSelectState.isDragging) {
+                    dragSelectState.isDragging = false;
+                    dragSelectState.selectMode = null;
+                    dragSelectState.selectedDuringDrag.clear();
+                    
+                    log('PHOTO_SELECT', { 
+                        totalSelected: pageState.selectedPhotos.size,
+                        selectedPhotos: Array.from(pageState.selectedPhotos)
+                    });
+                }
+            }
+
+            // 触摸事件
+            grid.addEventListener('touchstart', handleDragStart, { passive: false });
+            grid.addEventListener('touchmove', handleDragMove, { passive: false });
+            grid.addEventListener('touchend', handleDragEnd);
+            grid.addEventListener('touchcancel', handleDragEnd);
+
+            // 鼠标事件（用于桌面端测试）
+            grid.addEventListener('mousedown', handleDragStart);
+            grid.addEventListener('mousemove', handleDragMove);
+            grid.addEventListener('mouseup', handleDragEnd);
+            grid.addEventListener('mouseleave', handleDragEnd);
         }
 
         function updateAlbumTitle() {
