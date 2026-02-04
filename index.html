@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>QQ闪传 - 智能推荐命名</title>
     <style>
         * {
@@ -1227,57 +1227,9 @@
             font-size: 20px;
         }
 
-        /* 数据模拟日志 */
+        /* 数据模拟日志 - 已隐藏 */
         .data-log {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 320px;
-            max-height: 300px;
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 12px;
-            padding: 16px;
-            color: #00ff00;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 11px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .data-log-title {
-            color: #fff;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .data-log-clear {
-            color: #ff6b6b;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .data-log-item {
-            margin-bottom: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .data-log-item:last-child {
-            border-bottom: none;
-        }
-
-        .log-type {
-            color: #ffd93d;
-            font-weight: 600;
-        }
-
-        .log-time {
-            color: #888;
-            font-size: 10px;
+            display: none;
         }
 
         /* 隐藏正常模式下的部分 */
@@ -1289,8 +1241,8 @@
             display: none;
         }
 
-        /* 响应式 */
-        @media (max-width: 768px) {
+        /* 响应式 - 平板尺寸保持模拟器样式 */
+        @media (max-width: 768px) and (min-width: 481px) {
             .phone-frame {
                 width: 340px;
                 height: 736px;
@@ -1305,10 +1257,75 @@
                 width: 100px;
                 height: 26px;
             }
+        }
 
-            .data-log {
-                width: 280px;
-                font-size: 10px;
+        /* 移动端适配 - 真实手机上隐藏模拟器外壳，全屏显示内容 */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+                background: var(--bg_middle_standard);
+            }
+
+            .demo-container {
+                gap: 0;
+                width: 100%;
+                height: 100vh;
+            }
+
+            /* 隐藏标题 */
+            .demo-title {
+                display: none;
+            }
+
+            /* 移除手机外壳样式 */
+            .phone-frame {
+                width: 100%;
+                height: 100%;
+                background: transparent;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            .phone-screen {
+                border-radius: 0;
+                height: 100vh;
+            }
+
+            /* 隐藏刘海（真实手机有自己的刘海） */
+            .notch {
+                display: none;
+            }
+
+            /* 使用真实手机的状态栏 */
+            .status-bar {
+                display: none;
+            }
+
+            /* 调整页面内容区域 */
+            .page {
+                padding-top: env(safe-area-inset-top, 0);
+                padding-bottom: env(safe-area-inset-bottom, 0);
+            }
+
+            /* 调整相册页面的顶栏位置 */
+            .album-header {
+                padding-top: calc(env(safe-area-inset-top, 0) + 10px);
+            }
+
+            /* 调整所有页面的导航栏 */
+            .share-header,
+            .keyboard-page-header,
+            .share-sending-header,
+            .share-failed-header {
+                padding-top: calc(env(safe-area-inset-top, 0) + 10px);
+            }
+
+            /* 确保底部按钮区域不被遮挡 */
+            .album-footer,
+            .bottom-area,
+            .keyboard-bottom {
+                padding-bottom: calc(env(safe-area-inset-bottom, 0) + 10px);
             }
         }
     </style>
@@ -1552,15 +1569,6 @@
         </div>
     </div>
 
-    <!-- 数据日志面板 -->
-    <div class="data-log" id="dataLog">
-        <div class="data-log-title">
-            <span>📊 数据交互日志</span>
-            <span class="data-log-clear" id="clearLog">清空</span>
-        </div>
-        <div id="logContent"></div>
-    </div>
-
     <script>
         // ==================== 配置和状态 ====================
         const config = {
@@ -1636,27 +1644,11 @@
             '活动策划_营销方案文档',
         ];
 
-        // ==================== 日志功能 ====================
+        // ==================== 日志功能（已禁用） ====================
         function log(type, data) {
-            const logContent = document.getElementById('logContent');
-            const time = new Date().toLocaleTimeString();
-            const logItem = document.createElement('div');
-            logItem.className = 'data-log-item';
-            logItem.innerHTML = `
-                <span class="log-type">[${type}]</span>
-                <span class="log-time">${time}</span>
-                <div>${JSON.stringify(data, null, 2)}</div>
-            `;
-            logContent.insertBefore(logItem, logContent.firstChild);
-            
-            while (logContent.children.length > 50) {
-                logContent.removeChild(logContent.lastChild);
-            }
+            // 日志功能已禁用
+            console.log(`[${type}]`, data);
         }
-
-        document.getElementById('clearLog').addEventListener('click', () => {
-            document.getElementById('logContent').innerHTML = '';
-        });
 
         // ==================== Toast提示 ====================
         function showToast(message, duration = 2000, icon = '✓') {
