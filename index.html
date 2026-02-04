@@ -2108,6 +2108,10 @@
 
         // 初始化滑动选择功能
         function initDragSelect(grid) {
+            let autoScrollInterval = null;
+            const scrollSpeed = 8; // 滚动速度
+            const edgeThreshold = 60; // 边缘触发区域（像素）
+
             // 获取触摸/鼠标位置对应的photo-item
             function getItemAtPoint(x, y) {
                 const element = document.elementFromPoint(x, y);
@@ -2148,6 +2152,65 @@
                 updateSelectNumbers();
             }
 
+            // 自动滚动功能
+            function startAutoScroll(direction) {
+                if (autoScrollInterval) return;
+                
+                autoScrollInterval = setInterval(() => {
+                    if (!dragSelectState.isDragging) {
+                        stopAutoScroll();
+                        return;
+                    }
+                    
+                    const scrollAmount = direction === 'down' ? scrollSpeed : -scrollSpeed;
+                    grid.scrollTop += scrollAmount;
+                    
+                    // 滚动后检查并选中新出现的项目
+                    if (dragSelectState.lastClientY !== undefined) {
+                        const item = getItemAtPoint(dragSelectState.lastClientX, dragSelectState.lastClientY);
+                        if (item) {
+                            const index = parseInt(item.dataset.index);
+                            if (index !== dragSelectState.lastIndex) {
+                                const start = Math.min(dragSelectState.lastIndex, index);
+                                const end = Math.max(dragSelectState.lastIndex, index);
+                                
+                                for (let i = start; i <= end; i++) {
+                                    const targetItem = document.querySelector(`.photo-item[data-index="${i}"]`);
+                                    if (targetItem && !dragSelectState.selectedDuringDrag.has(i)) {
+                                        toggleItem(targetItem);
+                                    }
+                                }
+                                dragSelectState.lastIndex = index;
+                            }
+                        }
+                    }
+                }, 16); // 约60fps
+            }
+
+            function stopAutoScroll() {
+                if (autoScrollInterval) {
+                    clearInterval(autoScrollInterval);
+                    autoScrollInterval = null;
+                }
+            }
+
+            // 检查是否需要自动滚动
+            function checkAutoScroll(clientY) {
+                const gridRect = grid.getBoundingClientRect();
+                const relativeY = clientY - gridRect.top;
+                const gridHeight = gridRect.height;
+                
+                if (relativeY > gridHeight - edgeThreshold && grid.scrollTop < grid.scrollHeight - grid.clientHeight) {
+                    // 接近底部，向下滚动
+                    startAutoScroll('down');
+                } else if (relativeY < edgeThreshold && grid.scrollTop > 0) {
+                    // 接近顶部，向上滚动
+                    startAutoScroll('up');
+                } else {
+                    stopAutoScroll();
+                }
+            }
+
             // 开始拖动
             function handleDragStart(e) {
                 e.preventDefault();
@@ -2160,6 +2223,8 @@
                     dragSelectState.startIndex = index;
                     dragSelectState.lastIndex = index;
                     dragSelectState.selectedDuringDrag.clear();
+                    dragSelectState.lastClientX = point.clientX;
+                    dragSelectState.lastClientY = point.clientY;
                     
                     // 根据第一个点击的项目状态决定是选中还是取消选中模式
                     dragSelectState.selectMode = pageState.selectedPhotos.has(index) ? 'deselect' : 'select';
@@ -2174,6 +2239,12 @@
                 e.preventDefault();
                 
                 const point = e.touches ? e.touches[0] : e;
+                dragSelectState.lastClientX = point.clientX;
+                dragSelectState.lastClientY = point.clientY;
+                
+                // 检查是否需要自动滚动
+                checkAutoScroll(point.clientY);
+                
                 const item = getItemAtPoint(point.clientX, point.clientY);
                 
                 if (item) {
@@ -2199,10 +2270,13 @@
 
             // 结束拖动
             function handleDragEnd(e) {
+                stopAutoScroll();
                 if (dragSelectState.isDragging) {
                     dragSelectState.isDragging = false;
                     dragSelectState.selectMode = null;
                     dragSelectState.selectedDuringDrag.clear();
+                    dragSelectState.lastClientX = undefined;
+                    dragSelectState.lastClientY = undefined;
                     
                     log('PHOTO_SELECT', { 
                         totalSelected: pageState.selectedPhotos.size,
