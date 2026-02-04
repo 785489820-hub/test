@@ -255,15 +255,16 @@
         }
 
         /* 图片网格 */
-        /* 图片网格 - 一行2个，6张照片完全在一屏内显示 */
+        /* 图片网格 - 一行3个，照片之间有间距 */
         .photo-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 0;
-            padding: 0;
-            overflow: hidden;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+            overflow-y: auto;
+            overflow-x: hidden;
             height: calc(100% - 96px - 80px); /* 减去顶部导航和底部按钮区域 */
+            background: #E5E5EA;
         }
 
         .photo-item {
@@ -272,7 +273,7 @@
             position: relative;
             cursor: pointer;
             width: 100%;
-            height: 100%;
+            aspect-ratio: 1;
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
@@ -807,6 +808,192 @@
         .location-hint a {
             color: var(--button_bg_primary_default);
             text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* ==================== 设置页面样式 ==================== */
+        .settings-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            transition: background 0.3s ease;
+            z-index: 100;
+        }
+
+        .settings-overlay.active {
+            background: rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
+        }
+
+        .settings-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg_white);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 101;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 80%;
+            overflow: hidden;
+        }
+
+        .settings-panel.visible {
+            transform: translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--divider_light);
+        }
+
+        .settings-header .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text_primary);
+        }
+
+        .settings-header .close-settings {
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .settings-header .close-settings::before,
+        .settings-header .close-settings::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 1px;
+        }
+
+        .settings-header .close-settings::before {
+            transform: rotate(45deg);
+        }
+
+        .settings-header .close-settings::after {
+            transform: rotate(-45deg);
+        }
+
+        .settings-content {
+            padding: 16px 20px;
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+        }
+
+        .settings-section {
+            margin-bottom: 24px;
+        }
+
+        .settings-section-title {
+            font-size: 13px;
+            color: var(--text_secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--bg_middle_standard);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .settings-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .settings-item-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--button_bg_primary_default);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .settings-item-icon.orange {
+            background: var(--orange_primary);
+        }
+
+        .settings-item-icon.green {
+            background: var(--success_color);
+        }
+
+        .settings-item-info {
+            flex: 1;
+        }
+
+        .settings-item-title {
+            font-size: 15px;
+            color: var(--text_primary);
+            margin-bottom: 2px;
+        }
+
+        .settings-item-desc {
+            font-size: 12px;
+            color: var(--text_secondary);
+        }
+
+        /* iOS风格开关 */
+        .ios-switch {
+            width: 51px;
+            height: 31px;
+            background: #E9E9EB;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .ios-switch.active {
+            background: var(--success_color);
+        }
+
+        .ios-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 27px;
+            height: 27px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .ios-switch.active::after {
+            transform: translateX(20px);
         }
 
         /* 命名编辑态 */
@@ -1376,7 +1563,9 @@
                 flex: 1;
                 height: auto !important;
                 min-height: 0;
-                overflow: hidden;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
             }
 
             /* 底部分享面板 */
@@ -1567,7 +1756,7 @@
                                         <div class="file-meta" id="fileMeta">406.24 MB · 2 项</div>
                                         <div class="location-hint">
                                             <span>⚬ 含相册位置等信息</span>
-                                            <a href="javascript:void(0)">设置</a>
+                                            <a href="javascript:void(0)" id="openSettings">设置</a>
                                         </div>
                                     </div>
                                     <button class="confirm-btn" id="confirmBtn">分享</button>
@@ -1666,6 +1855,50 @@
                             </div>
 
                             <div class="home-indicator"></div>
+                        </div>
+
+                        <!-- 设置面板 -->
+                        <div class="settings-overlay" id="settingsOverlay"></div>
+                        <div class="settings-panel" id="settingsPanel">
+                            <div class="settings-header">
+                                <span class="title">隐私设置</span>
+                                <div class="close-settings" id="closeSettings"></div>
+                            </div>
+                            <div class="settings-content">
+                                <div class="settings-section">
+                                    <div class="settings-section-title">分享时抹除以下信息</div>
+                                    <div class="settings-item">
+                                        <div class="settings-item-left">
+                                            <div class="settings-item-icon">📍</div>
+                                            <div class="settings-item-info">
+                                                <div class="settings-item-title">位置信息</div>
+                                                <div class="settings-item-desc">抹除照片中的GPS定位数据</div>
+                                            </div>
+                                        </div>
+                                        <div class="ios-switch active" id="switchLocation" data-setting="location"></div>
+                                    </div>
+                                    <div class="settings-item">
+                                        <div class="settings-item-left">
+                                            <div class="settings-item-icon orange">📅</div>
+                                            <div class="settings-item-info">
+                                                <div class="settings-item-title">拍摄时间</div>
+                                                <div class="settings-item-desc">抹除照片的拍摄日期和时间</div>
+                                            </div>
+                                        </div>
+                                        <div class="ios-switch active" id="switchTime" data-setting="time"></div>
+                                    </div>
+                                    <div class="settings-item">
+                                        <div class="settings-item-left">
+                                            <div class="settings-item-icon green">📱</div>
+                                            <div class="settings-item-info">
+                                                <div class="settings-item-title">设备信息</div>
+                                                <div class="settings-item-desc">抹除拍摄设备型号等信息</div>
+                                            </div>
+                                        </div>
+                                        <div class="ios-switch" id="switchDevice" data-setting="device"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2565,15 +2798,64 @@
                     handleKeyPress(key.textContent);
                 });
             });
+
+            // ==================== 设置页面事件 ====================
+            // 打开设置
+            document.getElementById('openSettings').addEventListener('click', openSettings);
+            
+            // 关闭设置
+            document.getElementById('closeSettings').addEventListener('click', closeSettings);
+            document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
+            
+            // 开关切换
+            document.querySelectorAll('.ios-switch').forEach(switchEl => {
+                switchEl.addEventListener('click', () => {
+                    switchEl.classList.toggle('active');
+                    const setting = switchEl.dataset.setting;
+                    const isActive = switchEl.classList.contains('active');
+                    updatePrivacyHint();
+                    log('SETTING_CHANGE', { setting, enabled: isActive });
+                });
+            });
             
             // 初始日志
             log('PAGE_LOAD', { timestamp: Date.now(), message: '页面加载完成 - 完整交互流程' });
             
             // 显示操作提示
             setTimeout(() => {
-                showToast('选择图片后点击「QQ闪传分享」', 3000, '💡');
+                showToast('选择图片后点击「发闪传」', 3000, '💡');
             }, 500);
         });
+
+        // ==================== 设置页面功能 ====================
+        function openSettings() {
+            document.getElementById('settingsOverlay').classList.add('active');
+            document.getElementById('settingsPanel').classList.add('visible');
+            log('SETTINGS_OPEN', { timestamp: Date.now() });
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsOverlay').classList.remove('active');
+            document.getElementById('settingsPanel').classList.remove('visible');
+            log('SETTINGS_CLOSE', { timestamp: Date.now() });
+        }
+
+        function updatePrivacyHint() {
+            const locationEnabled = document.getElementById('switchLocation').classList.contains('active');
+            const timeEnabled = document.getElementById('switchTime').classList.contains('active');
+            const deviceEnabled = document.getElementById('switchDevice').classList.contains('active');
+            
+            const hints = [];
+            if (locationEnabled) hints.push('位置');
+            if (timeEnabled) hints.push('时间');
+            if (deviceEnabled) hints.push('设备');
+            
+            const hintText = hints.length > 0 
+                ? `⚬ 已抹除${hints.join('、')}信息` 
+                : '⚬ 含相册位置等信息';
+            
+            document.querySelector('.location-hint span').textContent = hintText;
+        }
     </script>
 </body>
 </html>
